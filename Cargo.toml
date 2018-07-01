@@ -4,4 +4,5 @@ version = "0.1.0"
 authors = ["Azriel Hoh <azriel91@gmail.com>"]
 
 [dependencies]
-winit = "0.13"
+amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "develop" }
+fern = "0.5"
