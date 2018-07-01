@@ -1,23 +1,41 @@
 # Multithread Window
 
-(Sometimes) reproduces https://github.com/tomaka/winit/issues/458
+(Sometimes) reproduces https://github.com/tomaka/glutin/issues/1038
 
 
-1. Run with `cargo run`, or if you've compiled it: `while true; do target/debug/multithread_window; done`.
+1. Run with `cargo run`, or if you've compiled it: `for i in {1..20}; do target/debug/multithread_window; done`.
 2. Hope it happens.
 
-Sample when it happens:
+Sample output:
 
 ```
-$ cargo run
-   Compiling multithread_window v0.1.0 (file:///home/azriel/work/github/azriel91/multithread_window)
-    Finished dev [unoptimized + debuginfo] target(s) in 2.68 secs
-     Running `target/debug/multithread_window`
 Spawned threads.
-[xcb] Unknown request in queue while appending request
+Waited for 100 ms.
+Spawned threads.
+[xcb] Unknown sequence number while processing queue
 [xcb] Most likely this is a multi-threaded client and XInitThreads has not been called
 [xcb] Aborting, sorry about that.
-multithread_window: ../../src/xcb_io.c:151: append_pending_request: Assertion `!xcb_xlib_unknown_req_pending' failed.
-[1]    21599 abort      cargo run
-```
+multithread_window: ../../src/xcb_io.c:259: poll_for_event: Assertion `!xcb_xlib_threads_sequence_lost' failed.
+Spawned threads.
+Waited for 100 ms.
+thread '<unnamed>' panicked at 'called `Result::unwrap()` on an `Err` value: OsError("glxGetVisualFromFBConfig failed")', libcore/result.rs:945:5
+Spawned threads.
+[xcb] Unknown sequence number while processing queue
+[xcb] Most likely this is a multi-threaded client and XInitThreads has not been called
+[xcb] Aborting, sorry about that.
+multithread_window: ../../src/xcb_io.c:259: poll_for_event: Assertion `!xcb_xlib_threads_sequence_lost' failed.
+Spawned threads.
+Waited for 100 ms.
+Spawned threads.
+Waited for 100 ms.
+Spawned threads.
+[winit X11 error] XError {
+    description: "GLXBadFBConfig",
+    error_code: 179,
+    request_code: 155,
+    minor_code: 34
+}
+thread '<unnamed>' panicked at 'Failed to get root window: XError { description: "GLXBadFBConfig", error_code: 179, request_code: 155, minor_code: 34 }', libcore/result.rs:945:5
+note: Run with `RUST_BACKTRACE=1` for a backtrace.
 
+```
