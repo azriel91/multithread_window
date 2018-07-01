@@ -1,3 +1,5 @@
+extern crate gfx;
+extern crate gfx_window_glutin;
 extern crate glutin;
 
 use std::thread::{self, JoinHandle};
@@ -7,29 +9,35 @@ use glutin::{GlContext, GlProfile, GlRequest};
 
 const THREAD_COUNT: usize = 10;
 
-fn open_window() {
-    let mut events_loop = glutin::EventsLoop::new();
+// Amethyst uses these
+pub type SurfaceFormat = gfx::format::R8_G8_B8_A8;
+pub type ChannelFormat = gfx::format::Unorm;
+pub type ColorFormat = (SurfaceFormat, ChannelFormat);
+pub type DepthFormat = gfx::format::DepthStencil;
 
+fn open_window() {
+    let window_builder = glutin::WindowBuilder::new()
+        .with_visibility(false)
+        .with_dimensions((800, 600).into());
+    let mut events_loop = glutin::EventsLoop::new();
     let context = glutin::ContextBuilder::new()
         .with_multisampling(0)
         .with_vsync(false)
         .with_gl_profile(GlProfile::Core)
         .with_gl(GlRequest::Latest);
 
-    let window = glutin::WindowBuilder::new();
-    let gl_window = glutin::GlWindow::new(window, context, &events_loop).unwrap();
+    let (gl_window, _dev, _fac, mut color, mut depth) =
+        gfx_window_glutin::init::<ColorFormat, DepthFormat>(window_builder, context, &events_loop);
+
+    // ---
 
     let _ = unsafe { gl_window.make_current() };
 
-    // println!(
-    //     "Pixel format of the window's GL context: {:?}",
-    //     gl_window.get_pixel_format()
-    // );
+    gfx_window_glutin::update_views(&gl_window, &mut color, &mut depth);
 
     let mut running = true;
     while running {
         events_loop.poll_events(|event| {
-            // println!("{:?}", event);
             if let glutin::Event::WindowEvent { event, .. } = event {
                 match event {
                     glutin::WindowEvent::CloseRequested => running = false,
